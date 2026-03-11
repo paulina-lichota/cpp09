@@ -6,11 +6,12 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/10 23:19:39 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/11 18:17:57 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/11 18:26:47 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "BitcoinExchange.hpp"
+#include <ctime>
 
 BitcoinExchange::BitcoinExchange() : _db() {}
 
@@ -32,8 +33,40 @@ BitcoinExchange::~BitcoinExchange() {}
 static int isValidDate(const std::string& date)
 {
   // check format YYYY-MM-DD
+  if (date.length() != 10)
+    return 0;
+  size_t i = 0;
+  while (i < 4)
+  {
+    if (date[i] < '0' || date[i] > '9')
+      return 0;
+    i++;
+  }
+  if (date[4] != '-')
+    return 0;
+  while (i < 7)
+  {
+    if (date[i] < '0' || date[i] > '9')
+      return 0;
+    i++;
+  }
+  if (date[7] != '-')
+    return 0;
+  while (i < 10)
+  {
+    if (date[i] < '0' || date[i] > '9')
+      return 0;
+    i++;
+  }
+
   // check valid month and day
-  return 0;
+  int y = std::atoi(date.substr(0, 4).c_str());
+  int m = std::atoi(date.substr(5, 2).c_str());
+  int d = std::atoi(date.substr(8, 2).c_str());
+  if (m < 1 || m > 12 || d < 1 || d > 31)
+    return 0;
+
+  return 1;
 }
 
 // return 1 if rate is valid, 0 otherwise
