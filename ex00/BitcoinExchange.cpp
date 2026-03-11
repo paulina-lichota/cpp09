@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/10 23:19:39 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/11 22:11:03 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/11 22:31:25 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,19 +60,22 @@ static void trimString(std::string& str)
   str.erase(last + 1);
 }
 
+static void printError(const std::string& line)
+{
+  std::cerr << MAGENTA << "Error: " << line << RESET << std::endl;
+}
+
 /* ======================================================================== */
 /*                              V A L I D A T E                             */
 /* ======================================================================== */
 
 // check format "YYYY-MM-DD"
+// 2013-024-12 DOES NOT COUNT as valid date
 static int isValidDate(const std::string& date)
 {
   // std:: cout << "Validating date: " << BLUE << date << RESET << std::endl;
   if (date.length() != 10)
-  {
-    std::cerr << MAGENTA << "Invalid date: length != 10" << RESET << std::endl;
-    return 0;
-  }
+    return (0);
 
   for (size_t i = 0; i < 10; i++)
   {
@@ -139,6 +142,27 @@ static int isValidRate(const std::string& rate)
 /*                              L O A D E R S                               */
 /* ======================================================================== */
 
+  /*
+    INSERTING INTO MAP:
+    map automatically orders by date (due to > operator on std::string)
+    Usa il black red tree quindi bilancia automaticamente:
+    - inserimento, cancellazione e ricerca in (O(log n))
+
+    METODO 1
+    se chiave esiste, aggiorna valore
+    _db[date] = rate;
+
+    METODO 2
+    se chiave esiste, NON aggiorna valore
+    _db.insert(std::make_pair(date, rate));
+
+    METODO 3
+    se chiave esiste, NON aggiorna valore
+    inserisce direttamente all'interno della mappa senza creare copie temporanee
+    piu' efficiente con tipi complessi, in questo caso non e' necessario
+    _db.emplace("key", 42);
+  */
+
 void BitcoinExchange::loadDatabase(const std::string& filename)
 {
   // std::cout << BLUE << "Loading database: " << filename << RESET << std::endl;
@@ -147,10 +171,11 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
     std::cerr << MAGENTA << "Error: invalid database filename." << RESET << std::endl;
     return;
   }
+  
   std::ifstream file(filename.c_str());
   if (!file.is_open())
   {
-    std::cerr << "Error: could not open database file." << std::endl;
+    std::cerr << MAGENTA << "Error: could not open database file." << RESET << std::endl;
     return;
   }
   std::string l;
@@ -173,16 +198,9 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
     }
     std::string date = l.substr(0, l.find(","));
     trimString(date);
-    // std:: cout << "Parsing date: " << YELLOW << date << RESET << std::endl;
     if (!isValidDate(date))
       continue; // salta al ciclo successivo
     std::string value = l.substr(l.find(",") + 1); // prende fino al '\0'
-    // std:: cout << "Parsing rate: " << YELLOW << value << RESET << std::endl;
-    // if (!isValidRate(value))
-    // {
-    //   std::cerr << "DB Error: invalid rate format." << std::endl;
-    //   return;
-    // }
     std::stringstream ss(value);
     double rate;
     if (!(ss >> rate))
@@ -190,27 +208,7 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
       std::cerr << MAGENTA << "DB Error: invalid rate, not a valid number." << RESET << std::endl;
       continue;
     }
-    /*
-      INSERTING INTO MAP:
-      map automatically orders by date (due to > operator on std::string)
-      Usa il black red tree quindi bilancia automaticamente:
-      - inserimento, cancellazione e ricerca in (O(log n))
-
-      METODO 1
-      se chiave esiste, aggiorna valore
-      _db[date] = rate;
-
-      METODO 2
-      se chiave esiste, NON aggiorna valore
-      _db.insert(std::make_pair(date, rate));
-
-      METODO 3
-      se chiave esiste, NON aggiorna valore
-      inserisce direttamente all'interno della mappa senza creare copie temporanee
-      piu' efficiente con tipi complessi, in questo caso non e' necessario
-      _db.emplace("key", 42);
-    */
-    _db.insert(std::make_pair(date, rate));
+    _db.insert(std::make_pair(date, rate)); // _db[date] = rate; se voglio sovrascrivere eventuali duplicati
   }
 }
 
@@ -218,13 +216,14 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
 /*                            P R O C E S S                                 */
 /* ======================================================================== */
 
+  /*
+    per accedere ai dati dentro mappa si usano metodi
+    key: it->first
+    value: it->second
+  */
+
 // search for date in database
 // if not found, return closest date before
-/*
-  per accedere ai dati dentro mappa si usano metodi
-  key: it->first
-  value: it->second
-*/
 double BitcoinExchange::getRate(const std::string& date) const
 {
   // cercare data esatta
@@ -233,10 +232,7 @@ double BitcoinExchange::getRate(const std::string& date) const
     return it->second;
 
   // cerco data piu' vicina minore piu' vicina a quella richiesta
-  /*
-    lower_bound return the first key that is equal or greater than k
-  */
-  it = _db.lower_bound(date);
+  it = _db.lower_bound(date); // returns the first key that is equal or greater than k
   if (it != _db.begin())
   {
     --it; // vai alla data immediatamente precedente
@@ -255,6 +251,7 @@ void BitcoinExchange::processFile(const std::string& filename)
     std::cerr << "Error: could not open file." << std::endl;
     return;
   }
+
   std::string l;
   std::getline(inputFile, l);
   if (l != "date | value")
@@ -267,18 +264,18 @@ void BitcoinExchange::processFile(const std::string& filename)
     // std:: cout << "Parsing line: " << YELLOW << l << RESET << std::endl;
     if (l.find("|") == std::string::npos)
     {
-      std::cerr << MAGENTA << "Error: bad input => " << l << RESET << std::endl;
+      printError("bad input => " + l);
       continue;
     }
     std::string date = l.substr(0, l.find("|"));
     trimString(date);
-      // std:: cout << "Parsing date: " << YELLOW << date << RESET << std::endl;
     if (!isValidDate(date))
     {
-      std::cerr << MAGENTA << "Error: invalid date format." << RESET << std::endl;
+      printError("invalid date format: " + date);
       continue;
     }
     std::string value = l.substr(l.find("|") + 1); // prende fino al '\0'
+    trimString(value);
     // std:: cout << "Parsing rate: " << YELLOW << value << RESET << std::endl;
     if (!isValidRate(value))
       continue;
@@ -286,10 +283,9 @@ void BitcoinExchange::processFile(const std::string& filename)
     double rate;
     if (!(ss >> rate))
     {
-      std::cerr << MAGENTA << "Error: invalid rate, not a valid number." << RESET << std::endl;
+      printError("invalid rate, not a valid number");
       continue;
     }
-    // prende date e rate
     std::cout << date << " => " << rate << " => " << YELLOW << rate *getRate(date) << RESET << std::endl;
   }
 }
@@ -303,6 +299,7 @@ void BitcoinExchange::printDatabase() const
   std::cout << "Database:" << std::endl;
   std::map<std::string, double>::const_iterator it = _db.begin();
   for (; it != _db.end(); ++it) {
-    std::cout << "Data: " << it->first << ", Rate: " << YELLOW << it->second << RESET << std::endl;
+    std::cout << "Data: " << it->first << ", Rate: " 
+      << YELLOW << it->second << RESET << std::endl;
   }
 }
