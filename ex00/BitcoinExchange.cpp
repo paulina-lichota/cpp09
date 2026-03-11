@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/10 23:19:39 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/11 21:59:57 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/11 22:08:45 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@
    ogni volta che viene incluso in un altro file.
 */
 #include <string>
-#include <cstdlib>
-#include <cctype>
-#include <sstream>
+#include <cstdlib> // atoi
+#include <cctype> // isdigit
+#include <sstream> // stringstream
 
 BitcoinExchange::BitcoinExchange() : _db() {}
 
@@ -43,11 +43,6 @@ BitcoinExchange::~BitcoinExchange() {}
 /*                              H E L P E R S                               */
 /* ======================================================================== */
 
-static bool charIsNumber(char c)
-{
-  return c >= '0' && c <= '9';
-}
-
 static void trimString(std::string& str)
 {
   // restituisce indice del primo carattere che non e' uno spazio
@@ -65,53 +60,27 @@ static void trimString(std::string& str)
   str.erase(last + 1);
 }
 
-
 /* ======================================================================== */
 /*                              V A L I D A T E                             */
 /* ======================================================================== */
 
-
+// check format "YYYY-MM-DD"
 static int isValidDate(const std::string& date)
 {
-  // check format YYYY-MM-DD
   // std:: cout << "Validating date: " << BLUE << date << RESET << std::endl;
-  size_t dl = date.length();
-  // std::cout << "Length :" << dl << std::endl; 
-  if (dl != 10)
+  if (date.length() != 10)
   {
     std::cerr << "Invalid date: length != 10" << std::endl;
     return 0;
   }
 
-  size_t i = 0;
-  while (i < 4)
+  for (size_t i = 0; i < 10; i++)
   {
-    if (!charIsNumber(date[i]))
+    if ((i == 4 || i == 7))
     {
-        std::cerr << "char " << i << " is not a number" << std::endl;
-        return 0;
+      if (date[i] != '-') return 0;
     }
-    i++;
-  }
-  if (date[4] != '-')
-    return 0;
-  while (++i < 7)
-  {
-    if (!charIsNumber(date[i]))
-    {
-        std::cerr << "char " << i << " is not a number" << std::endl;
-        return 0;
-    }
-  }
-  if (date[7] != '-')
-    return 0;
-  while (++i < 10)
-  {
-    if (!charIsNumber(date[i]))
-    {
-        std::cerr << "char " << i << " is not a number" << std::endl;
-        return 0;
-    }
+    else if (!isdigit(date[i])) return 0;
   }
 
   // check valid month and day
@@ -141,8 +110,8 @@ static int isValidRate(const std::string& rate)
   /*
     leggo un double dallo stream
     man mano che legge il "puntatore interno" avanza finche' riconosce sequenza del double
-    > se la lettura va a buon fine, restituice una reference allo stream (true)
-    > altrimenti lo stream imposta una flag (failbit), restituitendo false
+    - se la lettura va a buon fine, restituice una reference allo stream (true)
+    - altrimenti lo stream imposta una flag (failbit), restituitendo false
   */
   if (!(ss >> d))
   {
@@ -226,18 +195,15 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
       map automatically orders by date (due to > operator on std::string)
       Usa il black red tree quindi bilancia automaticamente:
       - inserimento, cancellazione e ricerca in (O(log n))
-    */
-    /* 
+
       METODO 1
       se chiave esiste, aggiorna valore
       _db[date] = rate;
-    */
-    /*
+
       METODO 2
       se chiave esiste, NON aggiorna valore
       _db.insert(std::make_pair(date, rate));
-    */
-    /*
+
       METODO 3
       se chiave esiste, NON aggiorna valore
       inserisce direttamente all'interno della mappa senza creare copie temporanee
@@ -327,7 +293,6 @@ void BitcoinExchange::processFile(const std::string& filename)
     std::cout << date << " => " << rate << " => " << rate *getRate(date) << std::endl;
   }
 }
-
 
 /* ======================================================================== */
 /*                               D E B U G                                  */
