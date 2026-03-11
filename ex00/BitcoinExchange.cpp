@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/10 23:19:39 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/11 21:13:41 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/11 21:26:12 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,10 @@ static int isValidDate(const std::string& date)
   int m = std::atoi(date.substr(5, 2).c_str());
   int d = std::atoi(date.substr(8, 2).c_str());
   if (m < 1 || m > 12 || d < 1 || d > 31 || y < 2009)
+  {
+    std::cerr << "Error: bad input => " << date << std::endl;
     return 0;
+  }
 
   // altri controlli su giorni per mese e anni bisestili potrebbero essere aggiunti, ma non richiesti
   // potrei usare mktime per controllare che la data sia realmente valida
@@ -132,13 +135,24 @@ static int isValidRate(const std::string& rate)
     > altrimenti lo stream imposta una flag (failbit), restituitendo false
   */
   if (!(ss >> d))
+  {
+    std::cerr << "Error: invalid rate format." << std::endl;
     return 0;
+  }
   // no extra chars after number
   if (ss >> c)
     return 0;
   // valid range (according to subject)
-  if (d < 0 || d > 1000)
+  if (d < 0)
+  {
+    std::cerr << "Error: not a positive number." << std::endl;
     return 0;
+  }
+  if (d > 1000)
+  {
+    std::cerr << "Error: too large a number." << std::endl;
+    return 0;
+  }
   return 1;
 }
 
@@ -163,7 +177,7 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
   std::getline(file, l);
   if (l != "date,exchange_rate")
   {
-    std::cerr << "Error: invalid database header." << std::endl;
+    std::cerr << "DB Error: invalid database header." << std::endl;
     return;
   }
   
@@ -172,28 +186,28 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
     // std:: cout << "Parsing line: " << YELLOW << l << RESET << std::endl;
     if (l.find(",") == std::string::npos)
     {
-      std::cerr << "Error: invalid line format." << std::endl;
-      return;
+      std::cerr << "DB Error: invalid line format." << std::endl;
+      continue;
     }
     std::string date = l.substr(0, l.find(","));
     trimString(date);
     // std:: cout << "Parsing date: " << YELLOW << date << RESET << std::endl;
     if (!isValidDate(date))
-    {
-      std::cerr << "Error: invalid date format." << std::endl;
-      return;
-    }
+      continue; // salta al ciclo successivo
     std::string value = l.substr(l.find(",") + 1); // prende fino al '\0'
     // std:: cout << "Parsing rate: " << YELLOW << value << RESET << std::endl;
     // if (!isValidRate(value))
     // {
-    //   std::cerr << "Error: invalid rate format." << std::endl;
+    //   std::cerr << "DB Error: invalid rate format." << std::endl;
     //   return;
     // }
     std::stringstream ss(value);
     double rate;
     if (!(ss >> rate))
-      return;
+    {
+      std::cerr << "DB Error: invalid rate, not a valid number." << std::endl;
+      continue;
+    }
     /*
       INSERTING INTO MAP:
       map automatically orders by date (due to > operator on std::string)
@@ -232,11 +246,21 @@ void BitcoinExchange::printDatabase() const
 
 // search for date in database
 // if not found, return closest date before
+/*
+  per accedere ai dati dentro mappa si usano metodi
+  key: it->first
+  value: it->second
+*/
 double BitcoinExchange::getRate(const std::string& date) const
 {
-  (void)date;
-  // std::map<std::string, double>::iterator it = m.begin();
-  // for (; it != m.end(); ++it) {
+  // cercare data esatta
+  std::map<std::string, double>::const_iterator it = _db.find(date);
+  if (it != _db.end()) {
+    return it->second;
+  }
+  
+  // for (; it != _db.end(); ++it)
+  // {
   //   if (it->first == date)
   //     return it->second;
   // }
@@ -261,31 +285,31 @@ void BitcoinExchange::processFile(const std::string& filename)
   }
   while (std::getline(inputFile, l))
   {
-    std:: cout << "Parsing line: " << YELLOW << l << RESET << std::endl;
+    // std:: cout << "Parsing line: " << YELLOW << l << RESET << std::endl;
     if (l.find("|") == std::string::npos)
     {
       std::cerr << "Error: bad input => "<< l << std::endl;
-      return;
+      continue;
     }
     std::string date = l.substr(0, l.find("|"));
     trimString(date);
-      std:: cout << "Parsing date: " << YELLOW << date << RESET << std::endl;
+      // std:: cout << "Parsing date: " << YELLOW << date << RESET << std::endl;
     if (!isValidDate(date))
     {
       std::cerr << "Error: invalid date format." << std::endl;
-      return;
+      continue;;
     }
     std::string value = l.substr(l.find("|") + 1); // prende fino al '\0'
-    std:: cout << "Parsing rate: " << YELLOW << value << RESET << std::endl;
+    // std:: cout << "Parsing rate: " << YELLOW << value << RESET << std::endl;
     if (!isValidRate(value))
-    {
-      std::cerr << "Error: invalid rate format." << std::endl;
-      return;
-    }
+      continue;
     std::stringstream ss(value);
     double rate;
     if (!(ss >> rate))
-      return;
+    {
+      std::cerr << "Error: invalid rate, not a valid number." << std::endl;
+      continue;
+    }
     // prende date e rate
     std::cout << date << " => " << rate << " => " << rate *getRate(date) << std::endl;
   }
