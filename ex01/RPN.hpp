@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 22:34:07 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/11 22:35:28 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/11 22:40:23 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,13 @@
 # define MAGENTA 	"\033[0;35m"
 # define RESET   	"\033[0m"
 
-
+class RPN
+{
+    private:
+        /* data */
+    public:
+        RPN(/* args */);
+        ~RPN();
+};
 
 #endif

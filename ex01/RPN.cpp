@@ -6,8 +6,16 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 22:35:08 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/11 22:35:24 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/11 22:40:25 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "RPN.hpp"
+
+RPN::RPN(/* args */)
+{
+}
+
+RPN::~RPN()
+{
+}
