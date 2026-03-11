@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/10 23:19:39 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/11 00:44:34 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/11 18:17:57 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,35 @@ BitcoinExchange& BitcoinExchange::operator=(const BitcoinExchange& other)
 
 BitcoinExchange::~BitcoinExchange() {}
 
+static int isValidDate(const std::string& date)
+{
+  // check format YYYY-MM-DD
+  // check valid month and day
+  return 0;
+}
+
+// return 1 if rate is valid, 0 otherwise
+static int isValidRate(const std::string& rate)
+{
+  // check if rate is a valid float or a positive integer between 0 and 1000
+  try {
+    size_t i = 0;
+    // stod assegna a i il primo indice non utilizzato es. 1234a restituisce indice di a
+    // se fallisce lancia exception
+    double d = std::stod(rate, &i);
+    // ci sono caratteri extra dopo il numero
+    if (i != rate.length())
+      return 0;
+    // non compresi tra 0 e 1000
+    if (d < 0 || d > 1000)
+      return 0;
+  }
+  catch (const std::exception& e) {
+    return 0;
+  }
+  return 1;
+}
+
 // "date | value"
 // map automatically orders by date due to > operator on std::string
 void BitcoinExchange::loadDatabase(const std::string& filename)
@@ -42,13 +71,30 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
   std::string l;
   while (std::getline(file, l))
   {
-    // parse line and insert into _db
-    _db[date] = value;
-    _db.insert(std::make_pair(date, value));
+    if (l.find(",") == std::string::npos)
+    {
+      std::cerr << "Error: invalid line format." << std::endl;
+      return;
+    }
+    std::string date = l.substr(0, l.find(","));
+    if (!isValidDate(date))
+    {
+      std::cerr << "Error: invalid date format." << std::endl;
+      return;
+    }
+    std::string value = l.substr(l.find(",") + 1); // prende fino al '\0'
+    if (!isValidRate(value))
+    {
+      std::cerr << "Error: invalid rate format." << std::endl;
+      return;
+    }
+    double rate = std::stod(value);
+    // _db[date] = rate; // METODO 1
+    _db.insert(std::make_pair(date, rate)); // METODO 2
   }
 }
 
-float BitcoinExchange::getRate(const std::string& date) const
+double BitcoinExchange::getRate(const std::string& date) const
 {
   // check date is valid
   // check date is in db

@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/10 23:19:39 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/11 00:30:14 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/11 18:10:38 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,12 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 class BitcoinExchange
 {
   private:
-    std::map<std::string, float> _db;
+    std::map<std::string, double> _db;
   public:
     BitcoinExchange();
     BitcoinExchange(const std::string& filename);
@@ -35,7 +36,7 @@ class BitcoinExchange
     BitcoinExchange& operator=(const BitcoinExchange& other);
     ~BitcoinExchange();
     void loadDatabase(const std::string& filename);
-    float getRate(const std::string& date) const;
+    double getRate(const std::string& date) const;
 };
 
 #endif
