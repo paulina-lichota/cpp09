@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/10 23:19:39 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/11 21:37:22 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/11 21:59:57 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,10 @@ BitcoinExchange& BitcoinExchange::operator=(const BitcoinExchange& other)
 
 BitcoinExchange::~BitcoinExchange() {}
 
+/* ======================================================================== */
+/*                              H E L P E R S                               */
+/* ======================================================================== */
+
 static bool charIsNumber(char c)
 {
   return c >= '0' && c <= '9';
@@ -60,6 +64,12 @@ static void trimString(std::string& str)
   // se last e' ultimo carattere, last + 1 corrisponde a fine stringa, quindi chiamata sicura
   str.erase(last + 1);
 }
+
+
+/* ======================================================================== */
+/*                              V A L I D A T E                             */
+/* ======================================================================== */
+
 
 static int isValidDate(const std::string& date)
 {
@@ -156,6 +166,10 @@ static int isValidRate(const std::string& rate)
   return 1;
 }
 
+/* ======================================================================== */
+/*                              L O A D E R S                               */
+/* ======================================================================== */
+
 void BitcoinExchange::loadDatabase(const std::string& filename)
 {
   // std::cout << BLUE << "Loading database: " << filename << RESET << std::endl;
@@ -234,14 +248,9 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
   }
 }
 
-void BitcoinExchange::printDatabase() const
-{
-  std::cout << "Database:" << std::endl;
-  std::map<std::string, double>::const_iterator it = _db.begin();
-  for (; it != _db.end(); ++it) {
-    std::cout << "Data: " << it->first << ", Rate: " << it->second << std::endl;
-  }
-}
+/* ======================================================================== */
+/*                            P R O C E S S                                 */
+/* ======================================================================== */
 
 // search for date in database
 // if not found, return closest date before
@@ -316,5 +325,19 @@ void BitcoinExchange::processFile(const std::string& filename)
     }
     // prende date e rate
     std::cout << date << " => " << rate << " => " << rate *getRate(date) << std::endl;
+  }
+}
+
+
+/* ======================================================================== */
+/*                               D E B U G                                  */
+/* ======================================================================== */
+
+void BitcoinExchange::printDatabase() const
+{
+  std::cout << "Database:" << std::endl;
+  std::map<std::string, double>::const_iterator it = _db.begin();
+  for (; it != _db.end(); ++it) {
+    std::cout << "Data: " << it->first << ", Rate: " << it->second << std::endl;
   }
 }
