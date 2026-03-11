@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/10 23:19:39 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/11 19:33:03 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/11 20:55:13 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,10 @@
   Il .cpp viene compilato solo una volta, mentre l'header viene compilato
    ogni volta che viene incluso in un altro file.
 */
-#include <ctime>
+#include <string>
 #include <cstdlib>
+#include <cctype>
+#include <sstream>
 
 BitcoinExchange::BitcoinExchange() : _db() {}
 
@@ -42,13 +44,24 @@ static bool charIsNumber(char c)
   return c >= '0' && c <= '9';
 }
 
+static std::string trimString(const std::string& str)
+{
+  size_t first = str.find_first_not_of(" \t\n\r\f\v");
+  if (first == std::string::npos)
+      return "";
+  size_t last = str.find_last_not_of(" \t\n\r\f\v");
+  return str.substr(first, (last - first + 1));
+}
+
 static int isValidDate(const std::string& date)
 {
+  // trim emptyspaces
+  const std::string _date = trimString(date);
+
   // check format YYYY-MM-DD
-  
-  std:: cout << "Validating date: " << BLUE << date << RESET << std::endl;
-  size_t dl = date.length();
-  std::cout << "Length :" << dl << std::endl; 
+  // std:: cout << "Validating date: " << BLUE << date << RESET << std::endl;
+  size_t dl = _date.length();
+  // std::cout << "Length :" << dl << std::endl; 
   if (dl != 10)
   {
     std::cerr << "Invalid date: length != 10" << std::endl;
@@ -58,39 +71,38 @@ static int isValidDate(const std::string& date)
   size_t i = 0;
   while (i < 4)
   {
-    if (!charIsNumber(date[i]))
+    if (!charIsNumber(_date[i]))
     {
         std::cerr << "char " << i << " is not a number" << std::endl;
         return 0;
     }
     i++;
   }
-  if (date[4] != '-')
+  if (_date[4] != '-')
     return 0;
   while (++i < 7)
   {
-    if (!charIsNumber(date[i]))
+    if (!charIsNumber(_date[i]))
     {
         std::cerr << "char " << i << " is not a number" << std::endl;
         return 0;
     }
   }
-  if (date[7] != '-')
+  if (_date[7] != '-')
     return 0;
   while (++i < 10)
   {
-    if (!charIsNumber(date[i]))
+    if (!charIsNumber(_date[i]))
     {
         std::cerr << "char " << i << " is not a number" << std::endl;
         return 0;
     }
   }
 
-  std::cout << "check if date is valid again" << std::endl;
   // check valid month and day
-  int y = std::atoi(date.substr(0, 4).c_str());
-  int m = std::atoi(date.substr(5, 2).c_str());
-  int d = std::atoi(date.substr(8, 2).c_str());
+  int y = std::atoi(_date.substr(0, 4).c_str());
+  int m = std::atoi(_date.substr(5, 2).c_str());
+  int d = std::atoi(_date.substr(8, 2).c_str());
   if (m < 1 || m > 12 || d < 1 || d > 31 || y < 2009)
     return 0;
 
@@ -101,33 +113,39 @@ static int isValidDate(const std::string& date)
 }
 
 // return 1 if rate is valid, 0 otherwise
-// static int isValidRate(const std::string& rate)
-// {
-//   double d;
-//   char c;
-//   // creo oggetto stringstream che contiene la stringa
-//   std::stringstream ss(rate);
+static int isValidRate(const std::string& rate)
+{
+  double d;
+  char c;
+  // creo oggetto stringstream che contiene la stringa
+  std::stringstream ss(rate);
   
-//   /*
-//     leggo un double dallo stream
-//     man mano che legge il "puntatore interno" avanza finche' riconosce sequenza del double
-//     > se la lettura va a buon fine, restituice una reference allo stream (true)
-//     > altrimenti lo stream imposta una flag (failbit), restituitendo false
-//   */
-//   if (!(ss >> d))
-//     return 0;
-//   // no extra chars after number
-//   if (ss >> c)
-//     return 0;
-//   // valid range (according to subject)
-//   if (d < 0 || d > 1000)
-//     return 0;
-//   return 1;
-// }
+  /*
+    leggo un double dallo stream
+    man mano che legge il "puntatore interno" avanza finche' riconosce sequenza del double
+    > se la lettura va a buon fine, restituice una reference allo stream (true)
+    > altrimenti lo stream imposta una flag (failbit), restituitendo false
+  */
+  if (!(ss >> d))
+    return 0;
+  // no extra chars after number
+  if (ss >> c)
+    return 0;
+  // valid range (according to subject)
+  if (d < 0 || d > 1000)
+    return 0;
+  return 1;
+}
 
 void BitcoinExchange::loadDatabase(const std::string& filename)
 {
-  std::cout << "Loading database: " << filename << std::endl;
+  std::cout << BLUE << "Loading database: " << filename << RESET << std::endl;
+  
+  if (filename.length() == 0 || filename.substr(filename.length() - 4) != ".csv")
+  {
+    std::cerr << "Error: invalid database filename." << std::endl;
+    return;
+  }
   std::ifstream file(filename.c_str());
   if (!file.is_open())
   {
@@ -135,6 +153,7 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
     return;
   }
   std::string l;
+
   // skippo intestazione
   std::getline(file, l);
   if (l != "date,exchange_rate")
@@ -142,16 +161,17 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
     std::cerr << "Error: invalid database header." << std::endl;
     return;
   }
+  
   while (std::getline(file, l))
   {
-    std:: cout << "Parsing line: " << YELLOW << l << RESET << std::endl;
+    // std:: cout << "Parsing line: " << YELLOW << l << RESET << std::endl;
     if (l.find(",") == std::string::npos)
     {
       std::cerr << "Error: invalid line format." << std::endl;
       return;
     }
     std::string date = l.substr(0, l.find(","));
-      std:: cout << "Parsing date: " << YELLOW << date << RESET << std::endl;
+      // std:: cout << "Parsing date: " << YELLOW << date << RESET << std::endl;
     if (!isValidDate(date))
     {
       std::cerr << "Error: invalid date format." << std::endl;
@@ -205,4 +225,53 @@ double BitcoinExchange::getRate(const std::string& date) const
   // check date is in db
   // if not, find closest date before it
   return 0.0;
+}
+
+void BitcoinExchange::processFile(const std::string& filename)
+{
+  std::cout << BLUE << "Processing file: " << filename << RESET << std::endl;
+  std::ifstream inputFile(filename.c_str());
+  if (!inputFile.is_open())
+  {
+    std::cerr << "Error: could not open file." << std::endl;
+    return;
+  }
+  std::string l;
+  std::getline(inputFile, l);
+  if (l != "date | value")
+  {
+    std::cerr << "Error: invalid input header." << std::endl;
+    return;
+  }
+  while (std::getline(inputFile, l))
+  {
+    std:: cout << "Parsing line: " << YELLOW << l << RESET << std::endl;
+    if (l.find("|") == std::string::npos)
+    {
+      std::cerr << "Error: bad input => "<< l << std::endl;
+      return;
+    }
+    std::string date = l.substr(0, l.find("|"));
+      std:: cout << "Parsing date: " << YELLOW << date << RESET << std::endl;
+    if (!isValidDate(date))
+    {
+      std::cerr << "Error: invalid date format." << std::endl;
+      return;
+    }
+    std::string value = l.substr(l.find("|") + 1); // prende fino al '\0'
+    std:: cout << "Parsing rate: " << YELLOW << value << RESET << std::endl;
+    if (!isValidRate(value))
+    {
+      std::cerr << "Error: invalid rate format." << std::endl;
+      return;
+    }
+    std::stringstream ss(value);
+    double rate;
+    if (!(ss >> rate))
+      return;
+    // prende date e rate
+    std::cout << date << " => " << rate << std::endl;
+    // moltiplica per rate
+    std::cout << rate *getRate(date) << std::endl;
+  }
 }

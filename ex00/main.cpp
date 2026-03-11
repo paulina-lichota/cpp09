@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/10 23:19:58 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/11 19:05:55 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/11 20:48:44 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ int main(int argc, char **argv)
     std::cerr << "Error: could not open file." << std::endl;
     return 1;
   }
-  std::ifstream inputFile(argv[1]);
   ::BitcoinExchange btc("data.csv");
-  btc.printDatabase();
+  // btc.printDatabase();
+  btc.processFile(argv[1]);
   return 0;
 }
