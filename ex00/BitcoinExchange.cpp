@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/10 23:19:39 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/11 22:08:45 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/11 22:11:03 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ static int isValidDate(const std::string& date)
   // std:: cout << "Validating date: " << BLUE << date << RESET << std::endl;
   if (date.length() != 10)
   {
-    std::cerr << "Invalid date: length != 10" << std::endl;
+    std::cerr << MAGENTA << "Invalid date: length != 10" << RESET << std::endl;
     return 0;
   }
 
@@ -89,7 +89,7 @@ static int isValidDate(const std::string& date)
   int d = std::atoi(date.substr(8, 2).c_str());
   if (m < 1 || m > 12 || d < 1 || d > 31 || y < 2009)
   {
-    std::cerr << "Error: bad input => " << date << std::endl;
+    std::cerr << MAGENTA << "Error: bad input => " << date << RESET << std::endl;
     return 0;
   }
 
@@ -115,7 +115,7 @@ static int isValidRate(const std::string& rate)
   */
   if (!(ss >> d))
   {
-    std::cerr << "Error: invalid rate format." << std::endl;
+    std::cerr << MAGENTA << "Error: invalid rate format." << RESET << std::endl;
     return 0;
   }
   // no extra chars after number
@@ -124,12 +124,12 @@ static int isValidRate(const std::string& rate)
   // valid range (according to subject)
   if (d < 0)
   {
-    std::cerr << "Error: not a positive number." << std::endl;
+    std::cerr << MAGENTA << "Error: not a positive number." << RESET << std::endl;
     return 0;
   }
   if (d > 1000)
   {
-    std::cerr << "Error: too large a number." << std::endl;
+    std::cerr << MAGENTA << "Error: too large a number." << RESET << std::endl;
     return 0;
   }
   return 1;
@@ -144,7 +144,7 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
   // std::cout << BLUE << "Loading database: " << filename << RESET << std::endl;
   if (filename.length() == 0 || filename.substr(filename.length() - 4) != ".csv")
   {
-    std::cerr << "Error: invalid database filename." << std::endl;
+    std::cerr << MAGENTA << "Error: invalid database filename." << RESET << std::endl;
     return;
   }
   std::ifstream file(filename.c_str());
@@ -159,7 +159,7 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
   std::getline(file, l);
   if (l != "date,exchange_rate")
   {
-    std::cerr << "DB Error: invalid database header." << std::endl;
+    std::cerr << MAGENTA << "DB Error: invalid database header." << RESET << std::endl;
     return;
   }
   
@@ -168,7 +168,7 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
     // std:: cout << "Parsing line: " << YELLOW << l << RESET << std::endl;
     if (l.find(",") == std::string::npos)
     {
-      std::cerr << "DB Error: invalid line format." << std::endl;
+      std::cerr << MAGENTA << "DB Error: invalid line format." << RESET << std::endl;
       continue;
     }
     std::string date = l.substr(0, l.find(","));
@@ -187,7 +187,7 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
     double rate;
     if (!(ss >> rate))
     {
-      std::cerr << "DB Error: invalid rate, not a valid number." << std::endl;
+      std::cerr << MAGENTA << "DB Error: invalid rate, not a valid number." << RESET << std::endl;
       continue;
     }
     /*
@@ -267,7 +267,7 @@ void BitcoinExchange::processFile(const std::string& filename)
     // std:: cout << "Parsing line: " << YELLOW << l << RESET << std::endl;
     if (l.find("|") == std::string::npos)
     {
-      std::cerr << "Error: bad input => "<< l << std::endl;
+      std::cerr << MAGENTA << "Error: bad input => " << l << RESET << std::endl;
       continue;
     }
     std::string date = l.substr(0, l.find("|"));
@@ -275,7 +275,7 @@ void BitcoinExchange::processFile(const std::string& filename)
       // std:: cout << "Parsing date: " << YELLOW << date << RESET << std::endl;
     if (!isValidDate(date))
     {
-      std::cerr << "Error: invalid date format." << std::endl;
+      std::cerr << MAGENTA << "Error: invalid date format." << RESET << std::endl;
       continue;
     }
     std::string value = l.substr(l.find("|") + 1); // prende fino al '\0'
@@ -286,11 +286,11 @@ void BitcoinExchange::processFile(const std::string& filename)
     double rate;
     if (!(ss >> rate))
     {
-      std::cerr << "Error: invalid rate, not a valid number." << std::endl;
+      std::cerr << MAGENTA << "Error: invalid rate, not a valid number." << RESET << std::endl;
       continue;
     }
     // prende date e rate
-    std::cout << date << " => " << rate << " => " << rate *getRate(date) << std::endl;
+    std::cout << date << " => " << rate << " => " << YELLOW << rate *getRate(date) << RESET << std::endl;
   }
 }
 
@@ -303,6 +303,6 @@ void BitcoinExchange::printDatabase() const
   std::cout << "Database:" << std::endl;
   std::map<std::string, double>::const_iterator it = _db.begin();
   for (; it != _db.end(); ++it) {
-    std::cout << "Data: " << it->first << ", Rate: " << it->second << std::endl;
+    std::cout << "Data: " << it->first << ", Rate: " << YELLOW << it->second << RESET << std::endl;
   }
 }
