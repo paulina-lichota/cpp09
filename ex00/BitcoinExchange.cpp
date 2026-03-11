@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/10 23:19:39 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/11 21:26:12 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/11 21:26:48 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -297,7 +297,7 @@ void BitcoinExchange::processFile(const std::string& filename)
     if (!isValidDate(date))
     {
       std::cerr << "Error: invalid date format." << std::endl;
-      continue;;
+      continue;
     }
     std::string value = l.substr(l.find("|") + 1); // prende fino al '\0'
     // std:: cout << "Parsing rate: " << YELLOW << value << RESET << std::endl;
