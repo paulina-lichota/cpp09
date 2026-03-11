@@ -6,12 +6,19 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/10 23:19:39 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/11 18:26:47 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/11 19:01:21 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "BitcoinExchange.hpp"
+/*
+  Includo queste librerie solo nel .cpp perche' 
+   riduco il tempo di compilazione e rischio di conflitti.
+  Il .cpp viene compilato solo una volta, mentre l'header viene compilato
+   ogni volta che viene incluso in un altro file.
+*/
 #include <ctime>
+#include <cstdlib>
 
 BitcoinExchange::BitcoinExchange() : _db() {}
 
@@ -66,33 +73,38 @@ static int isValidDate(const std::string& date)
   if (m < 1 || m > 12 || d < 1 || d > 31)
     return 0;
 
+  // altri controlli su giorni per mese e anni bisestili potrebbero essere aggiunti, ma non richiesti
+  // uso mktime per controllare che la data sia realmente valida
+  (void) y;
+
   return 1;
 }
 
 // return 1 if rate is valid, 0 otherwise
 static int isValidRate(const std::string& rate)
 {
-  // check if rate is a valid float or a positive integer between 0 and 1000
-  try {
-    size_t i = 0;
-    // stod assegna a i il primo indice non utilizzato es. 1234a restituisce indice di a
-    // se fallisce lancia exception
-    double d = std::stod(rate, &i);
-    // ci sono caratteri extra dopo il numero
-    if (i != rate.length())
-      return 0;
-    // non compresi tra 0 e 1000
-    if (d < 0 || d > 1000)
-      return 0;
-  }
-  catch (const std::exception& e) {
+  double d;
+  char c;
+  // creo oggetto stringstream che contiene la stringa
+  std::stringstream ss(rate);
+  
+  /*
+    leggo un double dallo stream
+    man mano che legge il "puntatore interno" avanza finche' riconosce sequenza del double
+    > se la lettura va a buon fine, restituice una reference allo stream (true)
+    > altrimenti lo stream imposta una flag (failbit), restituitendo false
+  */
+  if (!(ss >> d))
     return 0;
-  }
+  // no extra chars after number
+  if (ss >> c)
+    return 0;
+  // valid range (according to subject)
+  if (d < 0 || d > 1000)
+    return 0;
   return 1;
 }
 
-// "date | value"
-// map automatically orders by date due to > operator on std::string
 void BitcoinExchange::loadDatabase(const std::string& filename)
 {
   std::ifstream file(filename.c_str());
@@ -121,15 +133,35 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
       std::cerr << "Error: invalid rate format." << std::endl;
       return;
     }
-    double rate = std::stod(value);
-    // _db[date] = rate; // METODO 1
-    _db.insert(std::make_pair(date, rate)); // METODO 2
+    // (validation gia' fatta)
+    std::stringstream ss(value);
+    double rate;
+    ss >> rate;
+    /*
+      INSERTING INTO MAP:
+      map automatically orders by date (due to > operator on std::string)
+      Usa il black red tree quindi bilancia automaticamente:
+      - inserimento, cancellazione e ricerca in (O(log n))
+    */
+    /* 
+      METODO 1
+      se chiave esiste, aggiorna valore
+      _db[date] = rate;
+    */
+    /*
+      METODO 2
+      se chiave esiste, NON aggiorna valore
+      _db.insert(std::make_pair(date, rate));
+    */
+    _db.insert(std::make_pair(date, rate));
   }
 }
 
 double BitcoinExchange::getRate(const std::string& date) const
 {
+  (void) date;
   // check date is valid
   // check date is in db
   // if not, find closest date before it
+  return 0.0;
 }
