@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/10 23:19:39 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/11 19:21:58 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/11 19:33:03 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,40 +91,39 @@ static int isValidDate(const std::string& date)
   int y = std::atoi(date.substr(0, 4).c_str());
   int m = std::atoi(date.substr(5, 2).c_str());
   int d = std::atoi(date.substr(8, 2).c_str());
-  if (m < 1 || m > 12 || d < 1 || d > 31)
+  if (m < 1 || m > 12 || d < 1 || d > 31 || y < 2009)
     return 0;
 
   // altri controlli su giorni per mese e anni bisestili potrebbero essere aggiunti, ma non richiesti
-  // uso mktime per controllare che la data sia realmente valida
-  (void) y;
+  // potrei usare mktime per controllare che la data sia realmente valida
 
   return 1;
 }
 
 // return 1 if rate is valid, 0 otherwise
-static int isValidRate(const std::string& rate)
-{
-  double d;
-  char c;
-  // creo oggetto stringstream che contiene la stringa
-  std::stringstream ss(rate);
+// static int isValidRate(const std::string& rate)
+// {
+//   double d;
+//   char c;
+//   // creo oggetto stringstream che contiene la stringa
+//   std::stringstream ss(rate);
   
-  /*
-    leggo un double dallo stream
-    man mano che legge il "puntatore interno" avanza finche' riconosce sequenza del double
-    > se la lettura va a buon fine, restituice una reference allo stream (true)
-    > altrimenti lo stream imposta una flag (failbit), restituitendo false
-  */
-  if (!(ss >> d))
-    return 0;
-  // no extra chars after number
-  if (ss >> c)
-    return 0;
-  // valid range (according to subject)
-  if (d < 0 || d > 1000)
-    return 0;
-  return 1;
-}
+//   /*
+//     leggo un double dallo stream
+//     man mano che legge il "puntatore interno" avanza finche' riconosce sequenza del double
+//     > se la lettura va a buon fine, restituice una reference allo stream (true)
+//     > altrimenti lo stream imposta una flag (failbit), restituitendo false
+//   */
+//   if (!(ss >> d))
+//     return 0;
+//   // no extra chars after number
+//   if (ss >> c)
+//     return 0;
+//   // valid range (according to subject)
+//   if (d < 0 || d > 1000)
+//     return 0;
+//   return 1;
+// }
 
 void BitcoinExchange::loadDatabase(const std::string& filename)
 {
@@ -159,16 +158,16 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
       return;
     }
     std::string value = l.substr(l.find(",") + 1); // prende fino al '\0'
-    std:: cout << "Parsing rate: " << YELLOW << value << RESET << std::endl;
-    if (!isValidRate(value))
-    {
-      std::cerr << "Error: invalid rate format." << std::endl;
-      return;
-    }
-    // (validation gia' fatta)
+    // std:: cout << "Parsing rate: " << YELLOW << value << RESET << std::endl;
+    // if (!isValidRate(value))
+    // {
+    //   std::cerr << "Error: invalid rate format." << std::endl;
+    //   return;
+    // }
     std::stringstream ss(value);
     double rate;
-    ss >> rate;
+    if (!(ss >> rate))
+      return;
     /*
       INSERTING INTO MAP:
       map automatically orders by date (due to > operator on std::string)
