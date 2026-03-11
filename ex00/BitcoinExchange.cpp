@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/10 23:19:39 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/11 20:55:13 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/11 21:13:41 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,23 +44,28 @@ static bool charIsNumber(char c)
   return c >= '0' && c <= '9';
 }
 
-static std::string trimString(const std::string& str)
+static void trimString(std::string& str)
 {
+  // restituisce indice del primo carattere che non e' uno spazio
   size_t first = str.find_first_not_of(" \t\n\r\f\v");
+  // se non trova nulla (non esiste carattere oltre a spazi), return
   if (first == std::string::npos)
-      return "";
+    return;
+  str.erase(0, first);
+  // restituisce indice dell'ultimo carattere che non e' uno spazio
   size_t last = str.find_last_not_of(" \t\n\r\f\v");
-  return str.substr(first, (last - first + 1));
+  if (last == std::string::npos)
+    return;
+  // se non specifico il numero di caratteri, rimuove tutti da last in poi
+  // se last e' ultimo carattere, last + 1 corrisponde a fine stringa, quindi chiamata sicura
+  str.erase(last + 1);
 }
 
 static int isValidDate(const std::string& date)
 {
-  // trim emptyspaces
-  const std::string _date = trimString(date);
-
   // check format YYYY-MM-DD
   // std:: cout << "Validating date: " << BLUE << date << RESET << std::endl;
-  size_t dl = _date.length();
+  size_t dl = date.length();
   // std::cout << "Length :" << dl << std::endl; 
   if (dl != 10)
   {
@@ -71,28 +76,28 @@ static int isValidDate(const std::string& date)
   size_t i = 0;
   while (i < 4)
   {
-    if (!charIsNumber(_date[i]))
+    if (!charIsNumber(date[i]))
     {
         std::cerr << "char " << i << " is not a number" << std::endl;
         return 0;
     }
     i++;
   }
-  if (_date[4] != '-')
+  if (date[4] != '-')
     return 0;
   while (++i < 7)
   {
-    if (!charIsNumber(_date[i]))
+    if (!charIsNumber(date[i]))
     {
         std::cerr << "char " << i << " is not a number" << std::endl;
         return 0;
     }
   }
-  if (_date[7] != '-')
+  if (date[7] != '-')
     return 0;
   while (++i < 10)
   {
-    if (!charIsNumber(_date[i]))
+    if (!charIsNumber(date[i]))
     {
         std::cerr << "char " << i << " is not a number" << std::endl;
         return 0;
@@ -100,9 +105,9 @@ static int isValidDate(const std::string& date)
   }
 
   // check valid month and day
-  int y = std::atoi(_date.substr(0, 4).c_str());
-  int m = std::atoi(_date.substr(5, 2).c_str());
-  int d = std::atoi(_date.substr(8, 2).c_str());
+  int y = std::atoi(date.substr(0, 4).c_str());
+  int m = std::atoi(date.substr(5, 2).c_str());
+  int d = std::atoi(date.substr(8, 2).c_str());
   if (m < 1 || m > 12 || d < 1 || d > 31 || y < 2009)
     return 0;
 
@@ -171,7 +176,8 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
       return;
     }
     std::string date = l.substr(0, l.find(","));
-      // std:: cout << "Parsing date: " << YELLOW << date << RESET << std::endl;
+    trimString(date);
+    // std:: cout << "Parsing date: " << YELLOW << date << RESET << std::endl;
     if (!isValidDate(date))
     {
       std::cerr << "Error: invalid date format." << std::endl;
@@ -204,6 +210,13 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
       se chiave esiste, NON aggiorna valore
       _db.insert(std::make_pair(date, rate));
     */
+    /*
+      METODO 3
+      se chiave esiste, NON aggiorna valore
+      inserisce direttamente all'interno della mappa senza creare copie temporanee
+      piu' efficiente con tipi complessi, in questo caso non e' necessario
+      _db.emplace("key", 42);
+    */
     _db.insert(std::make_pair(date, rate));
   }
 }
@@ -217,13 +230,16 @@ void BitcoinExchange::printDatabase() const
   }
 }
 
-
+// search for date in database
+// if not found, return closest date before
 double BitcoinExchange::getRate(const std::string& date) const
 {
-  (void) date;
-  // check date is valid
-  // check date is in db
-  // if not, find closest date before it
+  (void)date;
+  // std::map<std::string, double>::iterator it = m.begin();
+  // for (; it != m.end(); ++it) {
+  //   if (it->first == date)
+  //     return it->second;
+  // }
   return 0.0;
 }
 
@@ -252,6 +268,7 @@ void BitcoinExchange::processFile(const std::string& filename)
       return;
     }
     std::string date = l.substr(0, l.find("|"));
+    trimString(date);
       std:: cout << "Parsing date: " << YELLOW << date << RESET << std::endl;
     if (!isValidDate(date))
     {
@@ -270,8 +287,6 @@ void BitcoinExchange::processFile(const std::string& filename)
     if (!(ss >> rate))
       return;
     // prende date e rate
-    std::cout << date << " => " << rate << std::endl;
-    // moltiplica per rate
-    std::cout << rate *getRate(date) << std::endl;
+    std::cout << date << " => " << rate << " => " << rate *getRate(date) << std::endl;
   }
 }
