@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/10 23:19:58 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/11 17:27:32 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/11 19:05:55 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,5 +34,6 @@ int main(int argc, char **argv)
   }
   std::ifstream inputFile(argv[1]);
   ::BitcoinExchange btc("data.csv");
+  btc.printDatabase();
   return 0;
 }

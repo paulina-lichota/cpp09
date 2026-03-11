@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/10 23:19:39 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/11 19:01:21 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/11 19:21:58 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,35 +37,56 @@ BitcoinExchange& BitcoinExchange::operator=(const BitcoinExchange& other)
 
 BitcoinExchange::~BitcoinExchange() {}
 
+static bool charIsNumber(char c)
+{
+  return c >= '0' && c <= '9';
+}
+
 static int isValidDate(const std::string& date)
 {
   // check format YYYY-MM-DD
-  if (date.length() != 10)
+  
+  std:: cout << "Validating date: " << BLUE << date << RESET << std::endl;
+  size_t dl = date.length();
+  std::cout << "Length :" << dl << std::endl; 
+  if (dl != 10)
+  {
+    std::cerr << "Invalid date: length != 10" << std::endl;
     return 0;
+  }
+
   size_t i = 0;
   while (i < 4)
   {
-    if (date[i] < '0' || date[i] > '9')
-      return 0;
+    if (!charIsNumber(date[i]))
+    {
+        std::cerr << "char " << i << " is not a number" << std::endl;
+        return 0;
+    }
     i++;
   }
   if (date[4] != '-')
     return 0;
-  while (i < 7)
+  while (++i < 7)
   {
-    if (date[i] < '0' || date[i] > '9')
-      return 0;
-    i++;
+    if (!charIsNumber(date[i]))
+    {
+        std::cerr << "char " << i << " is not a number" << std::endl;
+        return 0;
+    }
   }
   if (date[7] != '-')
     return 0;
-  while (i < 10)
+  while (++i < 10)
   {
-    if (date[i] < '0' || date[i] > '9')
-      return 0;
-    i++;
+    if (!charIsNumber(date[i]))
+    {
+        std::cerr << "char " << i << " is not a number" << std::endl;
+        return 0;
+    }
   }
 
+  std::cout << "check if date is valid again" << std::endl;
   // check valid month and day
   int y = std::atoi(date.substr(0, 4).c_str());
   int m = std::atoi(date.substr(5, 2).c_str());
@@ -107,6 +128,7 @@ static int isValidRate(const std::string& rate)
 
 void BitcoinExchange::loadDatabase(const std::string& filename)
 {
+  std::cout << "Loading database: " << filename << std::endl;
   std::ifstream file(filename.c_str());
   if (!file.is_open())
   {
@@ -114,20 +136,30 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
     return;
   }
   std::string l;
+  // skippo intestazione
+  std::getline(file, l);
+  if (l != "date,exchange_rate")
+  {
+    std::cerr << "Error: invalid database header." << std::endl;
+    return;
+  }
   while (std::getline(file, l))
   {
+    std:: cout << "Parsing line: " << YELLOW << l << RESET << std::endl;
     if (l.find(",") == std::string::npos)
     {
       std::cerr << "Error: invalid line format." << std::endl;
       return;
     }
     std::string date = l.substr(0, l.find(","));
+      std:: cout << "Parsing date: " << YELLOW << date << RESET << std::endl;
     if (!isValidDate(date))
     {
       std::cerr << "Error: invalid date format." << std::endl;
       return;
     }
     std::string value = l.substr(l.find(",") + 1); // prende fino al '\0'
+    std:: cout << "Parsing rate: " << YELLOW << value << RESET << std::endl;
     if (!isValidRate(value))
     {
       std::cerr << "Error: invalid rate format." << std::endl;
@@ -156,6 +188,16 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
     _db.insert(std::make_pair(date, rate));
   }
 }
+
+void BitcoinExchange::printDatabase() const
+{
+  std::cout << "Database:" << std::endl;
+  std::map<std::string, double>::const_iterator it = _db.begin();
+  for (; it != _db.end(); ++it) {
+    std::cout << "Data: " << it->first << ", Rate: " << it->second << std::endl;
+  }
+}
+
 
 double BitcoinExchange::getRate(const std::string& date) const
 {

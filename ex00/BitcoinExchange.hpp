@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/10 23:19:39 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/11 18:20:00 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/11 19:03:54 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,8 @@ class BitcoinExchange
     ~BitcoinExchange();
     void loadDatabase(const std::string& filename);
     double getRate(const std::string& date) const;
+    /* debug */
+    void printDatabase() const;
 };
 
 #endif
