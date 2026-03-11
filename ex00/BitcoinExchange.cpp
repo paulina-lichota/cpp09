@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/10 23:19:39 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/11 21:26:48 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/11 21:37:22 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,8 +158,7 @@ static int isValidRate(const std::string& rate)
 
 void BitcoinExchange::loadDatabase(const std::string& filename)
 {
-  std::cout << BLUE << "Loading database: " << filename << RESET << std::endl;
-  
+  // std::cout << BLUE << "Loading database: " << filename << RESET << std::endl;
   if (filename.length() == 0 || filename.substr(filename.length() - 4) != ".csv")
   {
     std::cerr << "Error: invalid database filename." << std::endl;
@@ -255,21 +254,26 @@ double BitcoinExchange::getRate(const std::string& date) const
 {
   // cercare data esatta
   std::map<std::string, double>::const_iterator it = _db.find(date);
-  if (it != _db.end()) {
+  if (it != _db.end())
     return it->second;
+
+  // cerco data piu' vicina minore piu' vicina a quella richiesta
+  /*
+    lower_bound return the first key that is equal or greater than k
+  */
+  it = _db.lower_bound(date);
+  if (it != _db.begin())
+  {
+    --it; // vai alla data immediatamente precedente
+    return it->second; // ritorno value
   }
-  
-  // for (; it != _db.end(); ++it)
-  // {
-  //   if (it->first == date)
-  //     return it->second;
-  // }
+  // nessuna data precedente trovata
   return 0.0;
 }
 
 void BitcoinExchange::processFile(const std::string& filename)
 {
-  std::cout << BLUE << "Processing file: " << filename << RESET << std::endl;
+  // std::cout << BLUE << "Processing file: " << filename << RESET << std::endl;
   std::ifstream inputFile(filename.c_str());
   if (!inputFile.is_open())
   {
