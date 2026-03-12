@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 22:33:41 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/12 18:17:33 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/12 18:28:20 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,4 +49,16 @@ $> ./RPN "1 2 * 2 / 2 * 2 4 - +"
 $> ./RPN "(1 + 1)"
 Error
 $>
+*/
+
+
+/*
+./RPN "1 2 + +"
+Error: Not enough operands
+./RPN "2 +"
+Error: Not enough operands
+./RPN "a b +"
+Error
+./RPN "2 0 /"
+
 */

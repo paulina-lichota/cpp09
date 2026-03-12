@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 22:35:08 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/12 18:24:25 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/12 18:30:29 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,11 @@ static int apply_operator(int a, int b, char op)
     else if (op == '*')
         return a * b;
     else if (op == '/')
+    {
+        if (b == 0)
+            return INT_MAX;
         return a / b;
+    }
     return INT_MAX; // should never happen
 }
 
@@ -94,7 +98,7 @@ void RPN::compute(std::string s)
         {
             if (_stack.size() < 2)
             {
-                std::cerr << "Error: Not enough operands" << std::endl;
+                std::cerr << "Error" << std::endl;
                 return ;
             }
             int b = _stack.top();
@@ -104,7 +108,7 @@ void RPN::compute(std::string s)
             int result = apply_operator(a, b, s[i]);
             if (result == INT_MAX)
             {
-                std::cerr << "Error: Invalid operator" << std::endl;
+                std::cerr << "Error: impossible to apply operator" << std::endl;
                 return ;
             }
             _stack.push(result);
