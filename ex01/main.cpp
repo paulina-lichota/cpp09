@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 22:33:41 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/12 17:28:37 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/12 18:17:33 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ int main(int argc, char **argv)
     try {
         RPN rpn;
         rpn.compute(argv[1]);
+        // rpn.print_LIFO();
     } catch (const std::exception& e)
     {
         return 1;

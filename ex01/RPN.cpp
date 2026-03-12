@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 22:35:08 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/12 18:11:58 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/12 18:24:25 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,14 +20,14 @@ RPN::RPN()
 {
 }
 
-RPN::RPN(const RPN& other) : stack(other.stack)
+RPN::RPN(const RPN& other) : _stack(other._stack)
 {
 }
 
 RPN& RPN::operator=(const RPN& other)
 {
     if (this != &other)
-        stack = other.stack;
+        _stack = other._stack;
     return *this;
 }
 
@@ -72,7 +72,9 @@ static int isValidString(const std::string& s)
 
 void RPN::compute(std::string s)
 {
-    std::stack<int> temp;
+    while (!_stack.empty()) {
+        _stack.pop();
+    }
 
     // has to contain only digits or operators or spaces
     if (!isValidString(s)) {
@@ -86,42 +88,41 @@ void RPN::compute(std::string s)
         if (std::isdigit(s[i]))
         {
             // convert char to int and push in temp stack
-            temp.push(s[i] - '0');
-            // stack.push(s[i]);
+            _stack.push(s[i] - '0');
         }
         else if (isOperator(s[i]))
         {
-            if (temp.size() < 2)
+            if (_stack.size() < 2)
             {
                 std::cerr << "Error: Not enough operands" << std::endl;
                 return ;
             }
-            int b = temp.top();
-            temp.pop();
-            int a = temp.top();
-            temp.pop();
+            int b = _stack.top();
+            _stack.pop();
+            int a = _stack.top();
+            _stack.pop();
             int result = apply_operator(a, b, s[i]);
             if (result == INT_MAX)
             {
                 std::cerr << "Error: Invalid operator" << std::endl;
                 return ;
             }
-            temp.push(result);
+            _stack.push(result);
         }
     }
-    if (temp.size() != 1)
+    if (_stack.size() != 1)
     {
         std::cerr << "Error" << std::endl;
         // std::cout << "Remaining elements in stack : " << std::endl;
         // print_LIFO();
         return ;
     }
-    std::cout << temp.top() << std::endl;
+    std::cout << _stack.top() << std::endl;
 }
 
 void RPN::print_LIFO()
 {
-    std::stack<char> temp = stack;
+    std::stack<int> temp = _stack;
     while (!temp.empty())
     {
         std::cout << temp.top() << " ";
