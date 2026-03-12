@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 22:34:07 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/12 16:14:55 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/12 17:29:15 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,14 +33,14 @@ class RPN
 {
     private:
         std::stack<char> stack;
-        int parse_and_fill_stack(std::string s); // devo accedere a stack quindi non puo' essere static
+        // int parse_and_fill_stack(std::string s); // devo accedere a stack quindi non puo' essere static
     public:
         RPN();
-        RPN(std::string s);
+        // RPN(std::string s);
         RPN(const RPN& other);
         RPN& operator=(const RPN& other);
         ~RPN();
-        void compute();
+        void compute(std::string s);
         void print_LIFO();
 };
 
