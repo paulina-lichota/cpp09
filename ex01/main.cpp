@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 22:33:41 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/11 22:40:00 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/12 14:12:38 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,11 @@
 
 
 // You don’t need to handle brackets or decimal numbers.
+
+// inverted Polish mathematical expression as an argument.
+
+// The numbers used in this operation and passed as arguments will always be less
+// than 10. The calculation itself but also the result do not take into account this rule
 
 int main(int argc, char **argv)
 {

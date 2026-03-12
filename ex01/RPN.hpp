@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 22:34:07 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/11 22:40:23 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/12 14:24:32 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,19 @@
 # define MAGENTA 	"\033[0;35m"
 # define RESET   	"\033[0m"
 
+#include <stack>
+#include <string>
+
 class RPN
 {
     private:
-        /* data */
+        std::stack<int> stack;
+        int parse_and_fill_stack(std::string s); // devo accedere a stack quindi non puo' essere static
     public:
-        RPN(/* args */);
+        RPN();
+        RPN(std::string s);
+        RPN(const RPN& other);
+        RPN& operator=(const RPN& other);
         ~RPN();
 };
 
