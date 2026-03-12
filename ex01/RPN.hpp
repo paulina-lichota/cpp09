@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 22:34:07 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/12 15:37:46 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/12 16:14:55 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ class RPN
         RPN& operator=(const RPN& other);
         ~RPN();
         void compute();
+        void print_LIFO();
 };
 
 #endif

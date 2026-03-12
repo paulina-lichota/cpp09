@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 22:35:08 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/12 15:44:59 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/12 16:22:30 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,24 +71,24 @@ int RPN::parse_and_fill_stack(std::string s)
     // has to contain only digits or operators or spaces
     for (std::string::iterator it = s.begin(); it != s.end(); ++it)
     {
-        // std::cout << "char: " << *it << std::endl;
         if (!isValid(*it)) {
             std::cerr << "Error" << std::endl;
             return 1;
         }
     }
 
-    // insert characters in stack
-    for (size_t i = 0; i < s.size(); i++)
+    // insert characters in stack IN REVERSE (LIFO)
+    for (size_t i = s.size(); i > 0; i--)
     {
-        if (s[i] != ' ')
-            stack.push(s[i]);
+        if (s[i - 1] != ' ')
+            stack.push(s[i - 1]);
     }
     return 0;
 }
 
 static int apply_operator(int a, int b, char op)
 {
+    std::cout << YELLOW << "apply operator: " << a << " " << op << " " << b << RESET << std::endl;
     if (op == '+')
         return a + b;
     else if (op == '-')
@@ -109,6 +109,7 @@ void RPN::compute()
     {
         if (first)
         {
+            std::cout << "is first, so pop : " << stack.top() << std::endl;
             char c1 = stack.top(); // prendo elemento
             stack.pop(); // elimino elemento
             if (!std::isdigit(c1))
@@ -116,9 +117,11 @@ void RPN::compute()
                 std::cerr << "Error: Not a number" << std::endl;
                 return ;
             }
-            result = atoi(&c1);
+            result = c1 - '0';
+            first = false;
         }
 
+        std::cout << "pop second number : " << stack.top() << std::endl;
         char c2 = stack.top(); // prendo elemento
         stack.pop(); // elimino elemento
         if (!std::isdigit(c2))
@@ -126,8 +129,9 @@ void RPN::compute()
             std::cerr << "Error: Not enough operands" << std::endl;
             return ;
         }
-        int n2 = atoi(&c2);
+        int n2 = c2 - '0';
 
+        std::cout << "pop operator : " << stack.top() << std::endl;
         char op = stack.top(); // prendo operatore
         stack.pop(); // elimino elemento
         if (!isOperator(op))
@@ -136,14 +140,31 @@ void RPN::compute()
             return ;
         }
         // apply operator
+        std::cout << "apply operator " << op << " on " << result << " and " << n2 << std::endl;
         result = apply_operator(result, n2, op);
+        std::cout << "result : " << result << std::endl;
         if (result == INT_MAX)
         {
             std::cerr << "Error: Invalid operator" << std::endl;
             return ;
         }
     }
-    if (stack.size() != 1)
+    if (stack.size() != 0)
+    {
         std::cerr << "Error" << std::endl;
-    std::cout << stack.top() << std::endl;
+        std::cout << "Remaining elements in stack : " << std::endl;
+        print_LIFO();
+    }
+    std::cout << result << std::endl;
+}
+
+void RPN::print_LIFO()
+{
+    std::stack<char> temp = stack;
+    while (!temp.empty())
+    {
+        std::cout << temp.top() << " ";
+        temp.pop();
+    }
+    std::cout << std::endl;
 }
