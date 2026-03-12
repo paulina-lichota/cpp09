@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/11 22:34:07 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/12 14:24:32 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/12 14:31:38 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 
 #include <stack>
 #include <string>
+#include <iostream>
 
 class RPN
 {
