@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/20 15:32:38 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/20 19:02:04 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/20 19:03:37 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ static std::vector<int> sort(std::vector<int> numbers) // local copy
     {
         /* inserisco in major con binary search */
         std::vector<int>::iterator it = std::lower_bound(major.begin(), major.end(), stray);
-        major.insert(it, stray);
+        major.insert(it, minor[i]);
     }
 
     // inserisco stray (se c'è)
