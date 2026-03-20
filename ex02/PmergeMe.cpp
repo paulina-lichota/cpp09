@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/20 15:32:38 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/20 16:15:35 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/20 18:50:30 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,53 @@ void PmergeMe::print() const
     minimizza il numero di confronti nel caso peggiore
 */
 
-void PmergeMe::sort()
+std::vector<int> PmergeMe::sort(std::vector<int> numbers) // local copy
 {
-    // sort
+    // caso base
+    if (numbers.size() <= 1)
+        return numbers;
+
+    // gestisco stray (elemento senza coppia)
+    // lo parcheggio come il set di numeri piccoli
+    // lo inseriro' alla fine con binary search insieme ai numeri piccoli
+    int stray = -1;
+    if (numbers.size() % 2 != 0)
+    {
+        stray = numbers.back();
+        numbers.pop_back();
+    }
+
+    std::vector<int> major;
+    std::vector<int> minor;
+
+    // condensato in un singolo step
+    // crea coppie + prendo il piu' grande di ogni coppia e ci faccio un array
+
+    std::cout << "debug: length " << numbers.size() << std::endl;
+    // le coppie devono essere ordinate in modo decrescente
+    for (size_t i = 0; i < numbers.size(); i += 2)
+    {
+        if (numbers[i] < numbers[i + 1])
+            std::swap(numbers[i], numbers[i + 1]);
+        major.push_back(numbers[i]);
+        minor.push_back(numbers[i + 1]);
+    }
+
+    // a questo punto tengo da parte minor
+    // sorto major che fara' da scheletro ordinato
+    major = sort(major);
+
+    // faccio binary search per inserire i piu' piccoli e lo stray (se c'è)
+    for (size_t i = 0; i < minor.size(); i++)
+    {
+        /* inserisco in major con binary search */
+    }
+
+    // inserisco stray (se c'è)
+    if (stray != -1)
+    {
+        /* inserisco in major con binary search */
+    }
+
+    return major;
 }
