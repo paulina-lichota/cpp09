@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/20 15:32:38 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/20 16:06:35 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/20 16:15:35 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ void PmergeMe::print() const
         std::cout << *it << " ";
         ++it;
     }
+    std::cout << std::endl;
 }
 
 /*
