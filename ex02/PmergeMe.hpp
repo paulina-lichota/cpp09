@@ -5,16 +5,30 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/13 19:11:51 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/13 19:15:00 by plichota         ###   ########.fr       */
+/*   Created: 2026/03/20 15:32:40 by plichota          #+#    #+#             */
+/*   Updated: 2026/03/20 16:06:33 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PMERGEME_HPP
 # define PMERGEME_HPP
 
-/*
-  Ford-Johnson algorithm
-*/
+#include <vector>
+
+class PmergeMe
+{
+    private:
+        std::vector<int> _numbers;
+
+    public:
+        PmergeMe();
+        PmergeMe(std::vector<int> numbers);
+        PmergeMe(const PmergeMe& other);
+        PmergeMe& operator=(const PmergeMe& other);
+        ~PmergeMe();
+
+        void sort();
+        void print() const;
+};
 
 #endif

@@ -5,31 +5,51 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/13 19:11:29 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/13 19:20:43 by plichota         ###   ########.fr       */
+/*   Created: 2026/03/20 14:19:01 by plichota          #+#    #+#             */
+/*   Updated: 2026/03/20 16:06:40 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "PmergeMe.hpp"
-#include <iostream>
-#include <string>
 
-// The management of errors related to duplicates is left to your discretion
+#include <string>
+#include <iostream>
+#include <vector>
+
+// The management of errors related to duplicates is left to your discretion.
+
+int parse_args(int argc, char **argv, std::vector<int>& numbers)
+{
+    for (int i = 1; i < argc; i++)
+    {
+        // parse
+        numbers.push_back(std::atoi(argv[i]));
+    }
+    return 0;
+}
 
 int main(int argc, char **argv)
 {
-  if (argc < 2)
-  {
-    std::cerr << "Usage: " << argv[0] << " <numbers...>" << std::endl;
-    return 1;
-  }
-  // check if args are POSITIVE INTEGERS
-  // merge-insert sort algorithm
+    if (argc < 2)
+    {
+        std::cerr << "Usage: " << argv[0] << " <numbers...>" << std::endl;
+        return 1;
+    }
+    std::vector<int> numbers;
+    if (parse_args(argc, argv, numbers))
+    {
+        std::cerr << "Error: invalid arguments" << std::endl;
+        return 1;
+    }
 
-  // 1 print before
-  // 2 print after
-  // 3 Time to process a range of 5 elements with std::<container1> : 0.00031 us
-  // 4 Time to process a range of 5 elements with std::<container1> : 0.00031 us
-  
-  // try with at least 3000 elements
+    //init constructor
+    PmergeMe x(numbers);
+    x.print();
+    // sort numbers vector
+    // // sort numbers deque
+    // print after sorting
+    // print time The indication of the time is deliberately strange in this example.
+        // Of course you have to indicate the time used to perform all your
+        // operations, both the sorting part and the data management part.
+    // print time
 }
