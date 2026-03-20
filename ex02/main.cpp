@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/20 14:19:01 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/20 17:12:30 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/20 19:01:51 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,9 @@ int main(int argc, char **argv)
     PmergeMe x(numbers);
 
     std::cout << "Before sorting: ";
+    x.print();
+    x.sortAll(numbers);
+    std::cout << "After sorting: ";
     x.print();
 
     // sort numbers vector

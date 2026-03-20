@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/20 15:32:38 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/20 18:50:30 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/20 19:02:04 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void PmergeMe::print() const
     minimizza il numero di confronti nel caso peggiore
 */
 
-std::vector<int> PmergeMe::sort(std::vector<int> numbers) // local copy
+static std::vector<int> sort(std::vector<int> numbers) // local copy
 {
     // caso base
     if (numbers.size() <= 1)
@@ -64,12 +64,12 @@ std::vector<int> PmergeMe::sort(std::vector<int> numbers) // local copy
 
     std::vector<int> major;
     std::vector<int> minor;
-
-    // condensato in un singolo step
-    // crea coppie + prendo il piu' grande di ogni coppia e ci faccio un array
-
+    
     std::cout << "debug: length " << numbers.size() << std::endl;
-    // le coppie devono essere ordinate in modo decrescente
+    
+    // secondo l'algoritmo le coppie devono essere ordinate in modo decrescente
+    //  cosi' prendo il primo elemento e inserisco in major
+    // ! condensato in un singolo step (avrei potuto usare pair)
     for (size_t i = 0; i < numbers.size(); i += 2)
     {
         if (numbers[i] < numbers[i + 1])
@@ -86,13 +86,22 @@ std::vector<int> PmergeMe::sort(std::vector<int> numbers) // local copy
     for (size_t i = 0; i < minor.size(); i++)
     {
         /* inserisco in major con binary search */
+        std::vector<int>::iterator it = std::lower_bound(major.begin(), major.end(), stray);
+        major.insert(it, stray);
     }
 
     // inserisco stray (se c'è)
     if (stray != -1)
     {
-        /* inserisco in major con binary search */
+        std::vector<int>::iterator it = std::lower_bound(major.begin(), major.end(), stray);
+        major.insert(it, stray);
     }
 
     return major;
 }
+
+void PmergeMe::sortAll(std::vector<int> numbers)
+{
+    _numbers = sort(numbers);
+}
+

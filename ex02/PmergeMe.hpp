@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/20 15:32:40 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/20 17:37:43 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/20 19:00:57 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ class PmergeMe
         PmergeMe& operator=(const PmergeMe& other);
         ~PmergeMe();
 
-        std::vector<int> sort(std::vector<int> numbers);
+        void sortAll(std::vector<int> numbers);
         void print() const;
 };
 
