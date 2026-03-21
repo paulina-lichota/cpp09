@@ -6,12 +6,18 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/20 15:32:40 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/20 19:00:57 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/20 19:20:40 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PMERGEME_HPP
 # define PMERGEME_HPP
+
+# define GREEN   	"\033[0;32m"
+# define YELLOW  	"\033[0;33m"
+# define BLUE    	"\033[0;34m"
+# define MAGENTA 	"\033[0;35m"
+# define RESET   	"\033[0m"
 
 #include <vector>
 

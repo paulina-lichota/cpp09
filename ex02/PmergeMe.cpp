@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/20 15:32:38 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/20 19:03:37 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/21 18:38:03 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,17 +35,16 @@ void PmergeMe::print() const
     std::vector<int>::const_iterator it = _numbers.begin();
     while (it != _numbers.end())
     {
-        std::cout << *it << " ";
+        std::cout << YELLOW << *it << " ";
         ++it;
     }
-    std::cout << std::endl;
+    std::cout << RESET << std::endl;
 }
 
 /*
     Merge-Insertion sort
     minimizza il numero di confronti nel caso peggiore
 */
-
 static std::vector<int> sort(std::vector<int> numbers) // local copy
 {
     // caso base
@@ -65,8 +64,6 @@ static std::vector<int> sort(std::vector<int> numbers) // local copy
     std::vector<int> major;
     std::vector<int> minor;
     
-    std::cout << "debug: length " << numbers.size() << std::endl;
-    
     // secondo l'algoritmo le coppie devono essere ordinate in modo decrescente
     //  cosi' prendo il primo elemento e inserisco in major
     // ! condensato in un singolo step (avrei potuto usare pair)
@@ -80,13 +77,15 @@ static std::vector<int> sort(std::vector<int> numbers) // local copy
 
     // a questo punto tengo da parte minor
     // sorto major che fara' da scheletro ordinato
-    major = sort(major);
+    if (major.size() > 1) // evito una chiamata
+        major = sort(major);
 
-    // faccio binary search per inserire i piu' piccoli e lo stray (se c'è)
+    // inserisco i numeri di minor in major con binary search (lower_bound usa binary search)
     for (size_t i = 0; i < minor.size(); i++)
     {
-        /* inserisco in major con binary search */
-        std::vector<int>::iterator it = std::lower_bound(major.begin(), major.end(), stray);
+        // lower_bound restituisce un iteratore al primo elemento maggiore o uguale a minor[i]
+        std::vector<int>::iterator it = std::lower_bound(major.begin(), major.end(), minor[i]);
+        // inserisce prima dell’elemento puntato da it
         major.insert(it, minor[i]);
     }
 
