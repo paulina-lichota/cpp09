@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/20 15:32:40 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/20 19:20:40 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/21 18:51:53 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,20 +20,25 @@
 # define RESET   	"\033[0m"
 
 #include <vector>
+#include <deque>
 
 class PmergeMe
 {
     private:
         std::vector<int> _numbers;
+        std::deque<int> _numbersDeque;
     public:
         PmergeMe();
         PmergeMe(std::vector<int> numbers);
+        PmergeMe(std::deque<int> numbers);
         PmergeMe(const PmergeMe& other);
         PmergeMe& operator=(const PmergeMe& other);
         ~PmergeMe();
 
-        void sortAll(std::vector<int> numbers);
-        void print() const;
+        void sortVector();
+        void sortDeque();
+        void printVector() const;
+        void printDeque() const;
 };
 
 #endif
