@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/20 15:32:38 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/21 19:13:48 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/21 22:00:20 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,6 +147,8 @@ static std::deque<int> sort2(std::deque<int> numbers) // local copy
     std::deque<int> minor;
 
     // qui dovrei usare iterator perche' deque e' piu' lento con operatore [] rispetto a vector
+    // ma il subject non e' chiaro... uso comunque [] per vedere la differnza di prestazioni tra vector e deque
+    // lo scopo sarebbe evitare i template
     for (size_t i = 0; i < numbers.size(); i += 2)
     {
         if (numbers[i] < numbers[i + 1])

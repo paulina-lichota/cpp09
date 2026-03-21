@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/20 14:19:01 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/21 19:14:26 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/21 22:04:15 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,8 +60,13 @@ int main(int argc, char **argv)
         std::cerr << "Error: invalid arguments" << std::endl;
         return 1;
     }
-
+    /* copio numbers in deque */
+    std::deque<int> numbers_deque;
+    for (size_t i = 0; i < numbers.size(); i++)
+        numbers_deque.push_back(numbers[i]);
+    
     PmergeMe x;
+    /* Vector */
     clock_t start = clock();
     x.init_vector(numbers);
     std::cout << "Before sorting: ";
@@ -70,7 +75,15 @@ int main(int argc, char **argv)
     clock_t end = clock();
     std::cout << "After sorting: ";
     x.printVector();
-    double t = (double)(end - start) / CLOCKS_PER_SEC;
+    double s = (double)(end - start) / CLOCKS_PER_SEC;
     std::cout << "Time to process a range of " << std::setw(4) << x.getVectorSize() 
-        << " elements with std::vector : " << t << " us" << std::endl;
+        << " elements with std::vector : " <<  (s * 1000000)  << " us" << std::endl; // stampo in microsecondi
+    /* Deque */
+    start = clock();
+    x.init_deque(numbers_deque);
+    x.sortDeque();
+    end = clock();
+    s = (double)(end - start) / CLOCKS_PER_SEC;
+    std::cout << "Time to process a range of " << std::setw(4) << x.getDequeSize() 
+        << " elements with std::deque  : " <<  (s * 1000000)  << " us" << std::endl; // stampo in microsecondi
 }
