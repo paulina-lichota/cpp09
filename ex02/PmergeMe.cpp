@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/20 15:32:38 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/21 18:52:59 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/21 19:13:48 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,12 @@
 
 PmergeMe::PmergeMe() : _numbers(), _numbersDeque() {} // inizializza vettore vuoto
 
-PmergeMe::PmergeMe(std::vector<int> numbers) : _numbers(numbers) { // inizializza vettore
-    // copia da vettore a deque
-    for (size_t i = 0; i < numbers.size(); i++)
-        _numbersDeque.push_back(numbers[i]);
+void PmergeMe::init_deque(const std::deque<int>& input) {
+    _numbersDeque = input;
 }
 
-PmergeMe::PmergeMe(std::deque<int> numbers) : _numbersDeque(numbers) { // inizializza deque
-    // copia da deque a vettore
-    for (size_t i = 0; i < numbers.size(); i++)
-        _numbers.push_back(numbers[i]);
+void PmergeMe::init_vector(const std::vector<int>& input) {
+    _numbers = input;
 }
 
 PmergeMe::PmergeMe(const PmergeMe& other) : _numbers(other._numbers), _numbersDeque(other._numbersDeque) {} // copia vettore e deque
@@ -149,10 +145,8 @@ static std::deque<int> sort2(std::deque<int> numbers) // local copy
 
     std::deque<int> major;
     std::deque<int> minor;
-    
-    // secondo l'algoritmo le coppie devono essere ordinate in modo decrescente
-    //  cosi' prendo il primo elemento e inserisco in major
-    // ! condensato in un singolo step (avrei potuto usare pair)
+
+    // qui dovrei usare iterator perche' deque e' piu' lento con operatore [] rispetto a vector
     for (size_t i = 0; i < numbers.size(); i += 2)
     {
         if (numbers[i] < numbers[i + 1])
@@ -188,4 +182,14 @@ static std::deque<int> sort2(std::deque<int> numbers) // local copy
 void PmergeMe::sortDeque()
 {
     _numbersDeque = sort2(_numbersDeque);
+}
+
+int PmergeMe::getVectorSize() const
+{
+    return _numbers.size();
+}
+
+int PmergeMe::getDequeSize() const
+{
+    return _numbersDeque.size();
 }

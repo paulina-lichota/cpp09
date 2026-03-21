@@ -6,7 +6,7 @@
 /*   By: plichota <plichota@student.42firenze.it    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/20 14:19:01 by plichota          #+#    #+#             */
-/*   Updated: 2026/03/21 18:51:07 by plichota         ###   ########.fr       */
+/*   Updated: 2026/03/21 19:14:26 by plichota         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,10 @@
 #include <cstring> // strlen
 #include <cstdlib> // atoi
 #include <limits> // numeric_limits
+#include <ctime> // clock, CLOCKS_PER_SEC
+#include <iomanip> // setw
 
-// The management of errors related to duplicates is left to your discretion.
+// Subject: "The management of errors related to duplicates is left to your discretion."
 
 // 0 parsing ok, 1 otherwise
 // only positive integers
@@ -59,19 +61,16 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    PmergeMe x(numbers);
-
+    PmergeMe x;
+    clock_t start = clock();
+    x.init_vector(numbers);
     std::cout << "Before sorting: ";
     x.printVector();
     x.sortVector();
+    clock_t end = clock();
     std::cout << "After sorting: ";
     x.printVector();
-
-    // sort numbers vector
-    // // sort numbers deque
-    // print after sorting
-    // print time The indication of the time is deliberately strange in this example.
-        // Of course you have to indicate the time used to perform all your
-        // operations, both the sorting part and the data management part.
-    // print time
+    double t = (double)(end - start) / CLOCKS_PER_SEC;
+    std::cout << "Time to process a range of " << std::setw(4) << x.getVectorSize() 
+        << " elements with std::vector : " << t << " us" << std::endl;
 }
